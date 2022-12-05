@@ -11,6 +11,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "http://localhost:5173")
 		c.JSON(200, gin.H{
 			"message": "Hey Weclome to the URL Shortener API",
 		})
