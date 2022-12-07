@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/brian926/UrlShorterGo/handler"
-	"github.com/brian926/UrlShorterGo/store"
+	"github.com/brian926/UrlShorterGo/packages/handler"
+	"github.com/brian926/packages/UrlShorterGo/api"
+	"github.com/brian926/packages/UrlShorterGo/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,14 @@ func main() {
 
 	r.GET("/:shortUrl", func(c *gin.Context) {
 		handler.HandleShortUrlRedirect(c)
+	})
+
+	r.GET("/pong", func(c *gin.Context) {
+		api.Pong(c)
+	})
+
+	r.GET("/createuser", func(c *gin.Context) {
+		api.CreateUser(c)
 	})
 
 	store.InitializeStore()

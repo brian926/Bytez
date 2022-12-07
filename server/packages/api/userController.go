@@ -8,8 +8,8 @@ import (
 	"github.com/brian926/UrlShorterGo/packages/config"
 	"github.com/brian926/UrlShorterGo/packages/db"
 	"github.com/brian926/UrlShorterGo/packages/utils"
+	"github.com/gin-gonic/gin"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -18,72 +18,82 @@ type Claims struct {
 	jwt.StantardClaims
 }
 
-func Pong(c *fiber.Ctx) error {
-	return c.SendString("pong")
+func Pong(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "Hey Weclome to the URL Shortener API",
+	})
 }
 
-func CreateUser(c *fiber.Ctx, dbConn *sql.DB) error {
+func CreateUser(c *gin.Context) {
 	user := &db.User{}
 
-	if err := c.BodyParser(user); err != nil {
-		return err
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	if errs := utils.ValidateUser(*user); len(errs) > 0 {
-		return c.Status(http.StatusUnprocessableEntity).JSON(&fiber.Map{"success": false, "errors": errs})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": errs.Error()})
+		return
 	}
 
-	if user.UserExists(dbConn) {
-		return c.Status(400).JSON(&fiber.Map{"succses": false, "errors": []string{"email already exists"}})
+	if user.UserExists() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
+		return
 	}
 
 	user.HashPassword()
-	_, err := dbConn.Query(db.CreateUserQuery, user.Name, user.Password, user.Email)
+	_, err := db.Exec(db.CreateUserQuery, user.Name, user.Password, user.Email)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(&fiber.Map{"succses": true})
+	c.JSON(200, gin.H{"message": "successfully created user"})
 }
 
-func Session(c *fiber.Ctx, dbConn *sql.DB) error {
-	tokenUser := c.Locals("user").(*jwt.Token)
+func Session(c *gin.Context) {
+	tokenUser := c.BindJSON("user").(*jwt.Token)
 	claims := tokenUser.Claims.(jwt.MapClaims)
 	userID, ok := claims["id"].(string)
 
 	if !ok {
-		return c.SendStatus(http.StatusUnauthorized)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "internal error"})
+		return
 	}
 
 	user := &db.User{}
-	if err := dbConn.QueryRow(db.GetUserByIDQuery, userID).
+	if err := db.Exec(db.GetUserByIDQuery, userID).
 		Scan(&user.ID, &user.Name, &user.Password, &user.Email, &user.CreatedAt, &user.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
-			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"success": false, "errors": []string{"Incorrect credentials"}})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect password"})
+			return
 		}
 	}
 	user.Password = ""
-	return c.JSON(&fiber.Map{"success": true, "user": user})
+	c.JSON(200, gin.H{"message": "session created"})
 }
 
-func Login(c *fiber.Ctx, dbConn *sql.DB) error {
+func Login(c *gin.Context) {
 	loginUser := &db.User{}
 
-	if err := c.BodyParser(loginUser); err != nil {
-		return err
+	if err := c.ShouldBindJSON(loginUser); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	user := &db.User{}
-	if err := dbConn.QueryRow(db.GetUserByEmailQuery, loginUser.Email).
+	if err := db.Exec(db.GetUserByEmailQuery, loginUser.Email).
 		Scan(&user.ID, &user.Name, &user.Password, &user.Email, &user.CreatedAt, &user.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
-			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"success": false, "errors": []string{"Incorrect credentials"}})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 	}
 
 	match := utils.ComparePassword(user.Password, loginUser.Password)
 	if !match {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"success": false, "errors": []string{"Incorrect credentials"}})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect password"})
+		return
 	}
 
 	//expiration time of the token ->30 mins
@@ -105,18 +115,21 @@ func Login(c *fiber.Ctx, dbConn *sql.DB) error {
 		return err
 	}
 
-	c.Cookie(&fiber.Cookie{
-		Name:     "token",
-		Value:    tokenValue,
-		Expires:  expirationTime,
-		Domain:   config.Config[config.CLIENT_URL],
-		HTTPOnly: true,
-	})
+	c.SetCookie(
+		"token",
+		tokenValue,
+		expirationTime,
+		"/session",
+		config.Config[config.CLIENT_URL],
+		true,
+		true,
+	)
 
-	return c.JSON(&fiber.Map{"success": true, "user": claims.User, "token": tokenValue})
+	c.JSON(200, gin.H{"user": claims.User, "token": tokenValue})
+	return
 }
 
-func Logout(c *fiber.Ctx) error {
-	c.ClearCookie()
-	return c.SendStatus(http.StatusOK)
+func Logout(c *gin.Context) {
+	c.SetCookie("name", "", 1, "/", "localhost", false, true)
+	c.String(200, "Deleted cookie")
 }

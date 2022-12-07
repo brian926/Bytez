@@ -1,8 +1,6 @@
 package db
 
 import (
-	"database/sql"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -39,7 +37,7 @@ func (user *User) HashPassword() error {
 	return nil
 }
 
-func (user *User) UserExists(dbConn *sql.DB) bool {
+func (user *User) UserExists() bool {
 	rows, err := dbConn.Query(GetUserByEmailQuery, user.Email)
 	if err != nil || !rows.Next() {
 		return false
