@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/brian926/UrlShorterGo/packages/config"
-	"github.com/brian926/UrlShorterGo/packages/db"
-	"github.com/brian926/UrlShorterGo/packages/utils"
+	"github.com/brian926/UrlShorterGo/server/packages/config"
+	"github.com/brian926/UrlShorterGo/server/packages/db"
+	"github.com/brian926/UrlShorterGo/server/packages/utils"
 	"github.com/gin-gonic/gin"
 
 	"github.com/golang-jwt/jwt"
@@ -101,8 +101,8 @@ func Login(c *gin.Context) {
 
 	user.Password = ""
 	claims := &Claims{
-		User: *user,
-		StandardClaims: jwt.StandardClaims{
+		*user,
+		jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}

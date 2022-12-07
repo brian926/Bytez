@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/brian926/UrlShorterGo/packages/handler"
-	"github.com/brian926/packages/UrlShorterGo/api"
-	"github.com/brian926/packages/UrlShorterGo/store"
+	"github.com/brian926/UrlShorterGo/server/packages/api"
+	"github.com/brian926/UrlShorterGo/server/packages/handler"
+	"github.com/brian926/UrlShorterGo/server/packages/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

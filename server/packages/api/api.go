@@ -4,8 +4,8 @@ import (
 	"database/sql"
 
 	"github.com/apex/log"
-	"github.com/brian926/UrlShorterGo/packages/config"
-	"github.com/brian926/UrlShorterGo/packages/db"
+	"github.com/brian926/UrlShorterGo/server/packages/config"
+	"github.com/brian926/UrlShorterGo/server/packages/db"
 )
 
 func StartServer() *sql.DB {

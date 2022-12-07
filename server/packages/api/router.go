@@ -3,7 +3,7 @@ package api
 import (
 	"database/sql"
 
-	"github.com/brian926/UrlShorterGo/packages/config"
+	"github.com/brian926/UrlShorterGo/server/packages/config"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

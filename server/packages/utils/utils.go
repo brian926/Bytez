@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"packages/db"
 	"regexp"
+
+	"github.com/brian926/UrlShorterGo/server/packages/db"
 
 	"golang.org/x/crypto/bcrypt"
 )

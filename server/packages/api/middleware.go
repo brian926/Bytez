@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/brian926/UrlShorterGo/packages/config"
+	"github.com/brian926/UrlShorterGo/server/packages/config"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"

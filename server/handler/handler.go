@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/brian926/UrlShorterGo/packages/shortener"
-	"github.com/brian926/UrlShorterGo/packages/store"
+	"github.com/brian926/UrlShorterGo/server/packages/shortener"
+	"github.com/brian926/UrlShorterGo/server/packages/store"
 	"github.com/gin-gonic/gin"
 )
 
