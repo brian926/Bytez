@@ -17,7 +17,7 @@ type LoginForm struct {
 
 //RegisterForm ...
 type RegisterForm struct {
-	Name     string `form:"name" json:"name" binding:"required,min=3,max=20,fullName"` //fullName rule is in validator.go
+	Name     string `form:"name" json:"name" binding:"required,min=3,max=20"` //fullName rule is in validator.go
 	Email    string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required,min=3,max=50"`
 }
@@ -35,7 +35,7 @@ func (f UserForm) Name(tag string, errMsg ...string) (message string) {
 	case "fullName":
 		return "Name should not include any special characters or numbers"
 	default:
-		return "Something went wrong, please try again later"
+		return "Something went wrong with name, please try again later"
 	}
 }
 
@@ -50,7 +50,7 @@ func (f UserForm) Email(tag string, errMsg ...string) (message string) {
 	case "min", "max", "email":
 		return "Please enter a valid email"
 	default:
-		return "Something went wrong, please try again later"
+		return "Something went wrong with email, please try again later"
 	}
 }
 
@@ -64,7 +64,7 @@ func (f UserForm) Password(tag string) (message string) {
 	case "eqfield":
 		return "Your passwords does not match"
 	default:
-		return "Something went wrong, please try again later"
+		return "Something went wrong with password, please try again later"
 	}
 }
 
@@ -99,7 +99,7 @@ func (f UserForm) Register(err error) string {
 	case validator.ValidationErrors:
 
 		if _, ok := err.(*json.UnmarshalTypeError); ok {
-			return "Something went wrong, please try again later"
+			return "Something went wrong unmarshaling json, please try again later"
 		}
 
 		for _, err := range err.(validator.ValidationErrors) {
@@ -120,5 +120,5 @@ func (f UserForm) Register(err error) string {
 		return "Invalid request"
 	}
 
-	return "Something went wrong, please try again later"
+	return "Something went wrong with registering, please try again later"
 }

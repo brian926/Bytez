@@ -65,7 +65,7 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	//Check if the user exists in database
 	checkUser, err := getDb.SelectInt("SELECT count(id) FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
 	if err != nil {
-		return user, errors.New("something went wrong, please try again later")
+		return user, errors.New("something went wrong checking for user, please try again later")
 	}
 
 	if checkUser > 0 {
@@ -75,13 +75,13 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	bytePassword := []byte(form.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if err != nil {
-		return user, errors.New("something went wrong, please try again later")
+		return user, errors.New("something went wrong with storing password, please try again later")
 	}
 
 	//Create the user and return back the user ID
 	err = getDb.QueryRow("INSERT INTO public.user(email, password, name) VALUES($1, $2, $3) RETURNING id", form.Email, string(hashedPassword), form.Name).Scan(&user.ID)
 	if err != nil {
-		return user, errors.New("something went wrong, please try again later")
+		return user, errors.New("something went wrong creating user, please try again later")
 	}
 
 	user.Name = form.Name
