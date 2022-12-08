@@ -52,3 +52,7 @@ func RetrieveInitialUrl(shortUrl string) string {
 
 	return result
 }
+
+func GetRedis() *redis.Client {
+	return storeService.redisClient
+}

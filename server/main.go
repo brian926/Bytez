@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/brian926/UrlShorterGo/server/packages/api"
-	"github.com/brian926/UrlShorterGo/server/packages/handler"
-	"github.com/brian926/UrlShorterGo/server/packages/store"
+	"github.com/brian926/UrlShorterGo/server/controllers"
+	"github.com/brian926/UrlShorterGo/server/db"
+	"github.com/brian926/UrlShorterGo/server/handler"
+	"github.com/brian926/UrlShorterGo/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -37,13 +38,30 @@ func main() {
 	})
 
 	r.GET("/pong", func(c *gin.Context) {
-		api.Pong(c)
+		controllers.Pong(c)
 	})
 
-	r.GET("/createuser", func(c *gin.Context) {
-		api.CreateUser(c)
+	v1 := r.Group("/v1")
+	{
+		/*** START USER ***/
+		user := new(controllers.UserController)
+
+		v1.POST("/user/login", user.Login)
+		v1.POST("/user/register", user.Register)
+		v1.GET("/user/logout", user.Logout)
+
+		/*** START AUTH ***/
+		auth := new(controllers.AuthController)
+
+		//Refresh the token when needed to generate new access_token and refresh_token for the user
+		v1.POST("/token/refresh", auth.Refresh)
+	}
+
+	r.NoRoute(func(c *gin.Context) {
+		c.HTML(404, "404.html", gin.H{})
 	})
 
+	db.Init()
 	store.InitializeStore()
 
 	err := r.Run(":9808")
