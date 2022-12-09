@@ -30,7 +30,9 @@ WITH
 
 ALTER DATABASE golang_gin_db OWNER TO postgres;
 
-\connect golang_gin_db SET statement_timeout = 0;
+\connect golang_gin_db;
+
+SET statement_timeout = 0;
 
 SET lock_timeout = 0;
 
@@ -159,7 +161,6 @@ COPY "user" (
 FROM stdin;
 
 \.
-
 
 --
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
