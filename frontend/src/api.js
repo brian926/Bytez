@@ -5,4 +5,5 @@ export const Endpoints = {
     register: `${apiURL}/user/register`,
     logout: `${apiURL}/user/logout`,
     createUrl: `${apiURL}/create-short-url`,
+    session: `${apiURL}/`,
 }
