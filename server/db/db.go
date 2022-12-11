@@ -4,22 +4,27 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/go-gorp/gorp"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" //import postgres
 )
 
-//DB ...
+// DB ...
 type DB struct {
 	*sql.DB
 }
 
 var db *gorp.DbMap
 
-//Init ...
+// Init ...
 func Init() {
-
-	dbinfo := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", "postgres", "Tunaman1!", "golang_gin_db")
+	load := godotenv.Load()
+	if load != nil {
+		log.Fatal("Error loading .env file")
+	}
+	dbinfo := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))
 
 	var err error
 	db, err = ConnectDB(dbinfo)
@@ -29,7 +34,7 @@ func Init() {
 
 }
 
-//ConnectDB ...
+// ConnectDB ...
 func ConnectDB(dataSourceName string) (*gorp.DbMap, error) {
 	fmt.Println(dataSourceName)
 	db, err := sql.Open("postgres", dataSourceName)
@@ -46,7 +51,7 @@ func ConnectDB(dataSourceName string) (*gorp.DbMap, error) {
 	return dbmap, nil
 }
 
-//GetDB ...
+// GetDB ...
 func GetDB() *gorp.DbMap {
 	return db
 }
