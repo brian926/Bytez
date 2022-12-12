@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 // import Register from './pages/Register'
 // import Login from './pages/Login'
-import Session from './pages/Session2'
+import Session from './pages/Session'
 import './App.css'
 
 function App() {

@@ -6,14 +6,36 @@ import (
 
 	"github.com/brian926/UrlShorterGo/server/controllers"
 	"github.com/brian926/UrlShorterGo/server/db"
+	"github.com/brian926/UrlShorterGo/server/forms"
 	"github.com/brian926/UrlShorterGo/server/handler"
 	"github.com/brian926/UrlShorterGo/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/twinj/uuid"
 )
+
+func RequestIDMiddlewre() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		uuid := uuid.NewV4()
+		c.Writer.Header().Set("X-Request-Id", uuid.String())
+		c.Next()
+	}
+}
+
+var auth = new(controllers.AuthController)
+
+func TokenAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth.TokenValid(c)
+		c.Next()
+	}
+}
 
 func main() {
 	r := gin.Default()
+
+	binding.Validator = new(forms.DefaultValidator)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -41,6 +63,10 @@ func main() {
 		controllers.Pong(c)
 	})
 
+	db.Init()
+	store.InitializeStore()
+	store.InitializeUser()
+
 	v1 := r.Group("/v1")
 	{
 		/*** START USER ***/
@@ -55,14 +81,13 @@ func main() {
 
 		//Refresh the token when needed to generate new access_token and refresh_token for the user
 		v1.POST("/token/refresh", auth.Refresh)
+
+		v1.GET("/session", TokenAuthMiddleware())
 	}
 
 	r.NoRoute(func(c *gin.Context) {
 		c.HTML(404, "404.html", gin.H{})
 	})
-
-	db.Init()
-	store.InitializeStore()
 
 	err := r.Run(":9808")
 	if err != nil {

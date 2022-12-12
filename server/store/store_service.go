@@ -14,6 +14,7 @@ type StorageService struct {
 
 var (
 	storeService = &StorageService{}
+	userService  = &StorageService{}
 	ctx          = context.Background()
 )
 
@@ -31,10 +32,28 @@ func InitializeStore() *StorageService {
 		panic(fmt.Sprintf("Error init Redis: %v", err))
 	}
 
-	fmt.Printf("\nRedis started successfully: pong message = {%s}", pong)
+	fmt.Printf("\nRedis store instance started successfully: pong message = {%s}\n", pong)
 
 	storeService.redisClient = redisClient
 	return storeService
+}
+
+func InitializeUser() *StorageService {
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6380",
+		Password: "",
+		DB:       0,
+	})
+
+	pong, err := redisClient.Ping(ctx).Result()
+	if err != nil {
+		panic(fmt.Sprintf("Error init Redis: %v", err))
+	}
+
+	fmt.Printf("\nRedis user instance started successfully: pong message = {%s}\n", pong)
+
+	userService.redisClient = redisClient
+	return userService
 }
 
 func SaveUrlMapping(shortUrl string, originalUrl string, userId string) {
@@ -54,5 +73,5 @@ func RetrieveInitialUrl(shortUrl string) string {
 }
 
 func GetRedis() *redis.Client {
-	return storeService.redisClient
+	return userService.redisClient
 }
