@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/brian926/UrlShorterGo/server/store"
 	jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 	uuid "github.com/twinj/uuid"
 )
 
@@ -107,6 +109,11 @@ func (m AuthModel) ExtractToken(r *http.Request) string {
 
 //VerifyToken ...
 func (m AuthModel) VerifyToken(r *http.Request) (*jwt.Token, error) {
+	load := godotenv.Load()
+	if load != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	tokenString := m.ExtractToken(r)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		//Make sure that the token method conform to "SigningMethodHMAC"
