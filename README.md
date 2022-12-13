@@ -1,4 +1,4 @@
-# UrlShort
+# Bytez
 A URL Shortener to deliever fast short URLs!
 
 ## About
@@ -10,4 +10,6 @@ Using Go and Redis, we can write a fast backend and store short URLs in Redis ca
 Made with **Go**, **React**, **Redis**, **Postgres**
 
 ## TODO:
-- Add to Project list
+- Finish frontend
+- Save URLs to postgres
+- Clean Redis cache after time duration
