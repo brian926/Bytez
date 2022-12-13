@@ -85,7 +85,7 @@ const Session = () => {
     getUserInfo()
   }, [])
 
-  const UserId = "e0dba740-fc4b-4977-872c-d360239e6b1a"
+  const fakeUserId = "e0dba740-fc4b-4977-872c-d360239e6b1a"
   
     const [post, setPost] = useState("") 
     const [responseToPost, setState] = useState(null) 
@@ -95,7 +95,7 @@ const Session = () => {
       try {
         const response = await fetch(Endpoints.createUrl, {
         method: 'POST',
-        body: JSON.stringify({"long_url":post, "user_id": UserId})
+        body: JSON.stringify({"long_url":post, "user_id": fakeUserId})
   
       })
       if (!response.ok) {
@@ -131,11 +131,13 @@ const Session = () => {
           </a>
         </div>
         <h1>Vite + React</h1>
+        <p>Enter a URL link down below and generate a shorter cleaner URL for easy sharing and posting!</p>
       <div>
         {isFetching ? (
           <div>fetching details...</div>
         ) : (
           <div>
+            {/* TODO: If there is user, pass userId and pull/save old urls */}
             {user && (
               <div>
                 <div>
@@ -158,6 +160,19 @@ const Session = () => {
                 </div>
               </div>
             )}
+            {/* Use fake userId to generate temp short urls */}
+            <div>
+                <form onSubmit={handleSubmit}>
+                  <input 
+                    type="text"
+                    value={post}
+                    name="long_url"
+                    onChange={ e => setPost(e.target.value)}
+                  />
+                  <button type="submit">Generate</button>
+                </form>
+                {responseToPost && (<div> <a className="link" target="_blank" href={responseToPost}>{responseToPost}</a></div>)}
+              </div>
           </div>
         )}
 
