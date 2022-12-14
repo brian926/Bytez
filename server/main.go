@@ -13,13 +13,13 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	"github.com/twinj/uuid"
 )
 
 func RequestIDMiddlewre() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		uuid := uuid.NewV4()
+		uuid := uuid.New()
 		c.Writer.Header().Set("X-Request-Id", uuid.String())
 		c.Next()
 	}

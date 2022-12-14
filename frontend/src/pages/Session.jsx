@@ -130,8 +130,14 @@ const Session = () => {
             <img src="/postgres.svg" className="logo" alt="Postgres logo" />
           </a>
         </div>
-        <h1>Vite + React</h1>
+        <h1>Bytez</h1>
+        <div className="card">
+          <p><b>{data && (data.message)}</b></p>
+          {loading && <div>A moment please...</div>}
+          {error && (<div>{`There is a problem fetching the post data - ${error}`}</div>)}
+        </div>
         <p>Enter a URL link down below and generate a shorter cleaner URL for easy sharing and posting!</p>
+        <p>*Links generated will only be avaialble for 6 hours*</p>
       <div>
         {isFetching ? (
           <div>fetching details...</div>
@@ -177,11 +183,6 @@ const Session = () => {
         )}
 
         <Errors errors={errors} />
-      </div>
-      <div className="card">
-          <p>{data && (data.message)}</p>
-          {loading && <div>A moment please...</div>}
-          {error && (<div>{`There is a problem fetching the post data - ${error}`}</div>)}
       </div>
         <p className="read-the-docs">
           Click on the Vite, React, Go, Redis, and Postgres logos to learn more

@@ -11,7 +11,7 @@ import (
 
 	"github.com/brian926/UrlShorterGo/server/store"
 	jwt "github.com/golang-jwt/jwt/v4"
-	uuid "github.com/twinj/uuid"
+	uuid "github.com/google/uuid"
 )
 
 //TokenDetails ...
@@ -46,10 +46,10 @@ func (m AuthModel) CreateToken(userID int64) (*TokenDetails, error) {
 
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
-	td.AccessUUID = uuid.NewV4().String()
+	td.AccessUUID = uuid.New().String()
 
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
-	td.RefreshUUID = uuid.NewV4().String()
+	td.RefreshUUID = uuid.New().String()
 
 	var err error
 	//Creating Access Token
