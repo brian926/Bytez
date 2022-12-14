@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/brian926/UrlShorterGo/server/controllers"
@@ -12,6 +13,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/joho/godotenv"
 	"github.com/twinj/uuid"
 )
 
@@ -33,6 +35,11 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 }
 
 func main() {
+	load := godotenv.Load()
+	if load != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	r := gin.Default()
 
 	binding.Validator = new(forms.DefaultValidator)
@@ -47,7 +54,7 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "Hey Weclome to the URL Shortener API",
+			"message": "Hey Weclome to Bytez! The URL Shortener API",
 		})
 	})
 

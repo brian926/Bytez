@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -21,8 +22,9 @@ var (
 const CacheDuration = 6 * time.Hour
 
 func InitializeStore() *StorageService {
+	redisInfo := fmt.Sprintf("%s:%s", os.Getenv("REDIS_STORE_HOST"), os.Getenv("REDIS_STORE_PORT"))
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     redisInfo,
 		Password: "",
 		DB:       0,
 	})
@@ -39,8 +41,9 @@ func InitializeStore() *StorageService {
 }
 
 func InitializeUser() *StorageService {
+	redisInfo := fmt.Sprintf("%s:%s", os.Getenv("REDIS_USER_HOST"), os.Getenv("REDIS_USER_PORT"))
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6380",
+		Addr:     redisInfo,
 		Password: "",
 		DB:       0,
 	})

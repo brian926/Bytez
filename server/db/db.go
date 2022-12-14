@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/go-gorp/gorp"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" //import postgres
 )
 
@@ -20,10 +19,6 @@ var db *gorp.DbMap
 
 // Init ...
 func Init() {
-	load := godotenv.Load()
-	if load != nil {
-		log.Fatal("Error loading .env file")
-	}
 	dbinfo := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))
 
 	var err error
