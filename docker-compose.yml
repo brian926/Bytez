@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  web:
+    build: ./frontend
+    network_mode: "host"
+  server:
+    build: ./server
+    network_mode: "host"
+  
