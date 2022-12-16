@@ -22,7 +22,9 @@ SET client_min_messages = warning;
 
 --
 
-DROP DATABASE golang_gin_db;
+--DROP DATABASE golang_gin_db;
+
+--DROP DATABASE golang_gin_db;
 
 CREATE DATABASE golang_gin_db
 WITH
@@ -150,20 +152,30 @@ SET
 
 --
 
-COPY "user" (
-    id,
-    email,
-    password,
-    name,
-    updated_at,
-    created_at
-)
-FROM stdin;
+-- COPY "user" (
 
-\.
+--     id,
+
+--     email,
+
+--     password,
+
+--     name,
+
+--     updated_at,
+
+--     created_at
+
+-- )
+
+-- FROM stdin;
+
+-- \.
 
 --
+
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+
 --
 
 SELECT pg_catalog.setval('user_id_seq', 1, false);

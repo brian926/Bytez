@@ -23,7 +23,7 @@ const Session = () => {
         const getData = async () => {
         try {
             const response = await fetch(
-            `http://localhost:9808`
+            `http://server:9808`
             );
             if (!response.ok) {
             throw new Error(

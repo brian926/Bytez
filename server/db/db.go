@@ -19,7 +19,7 @@ var db *gorp.DbMap
 
 // Init ...
 func Init() {
-	dbinfo := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))
+	dbinfo := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=disable", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
 
 	var err error
 	db, err = ConnectDB(dbinfo)
