@@ -1,4 +1,4 @@
-export const apiURL = 'http://server:9808'
+export const apiURL = 'http://localhost:9808'
 
 export const Endpoints = {
     login: `${apiURL}/user/login`,
