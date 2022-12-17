@@ -72,7 +72,6 @@ func main() {
 
 	db.Init()
 	store.InitializeStore()
-	store.InitializeUser()
 
 	v1 := r.Group("/v1")
 	{

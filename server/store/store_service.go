@@ -40,25 +40,6 @@ func InitializeStore() *StorageService {
 	return storeService
 }
 
-func InitializeUser() *StorageService {
-	redisInfo := fmt.Sprintf("%s:%s", os.Getenv("REDIS_USER_HOST"), os.Getenv("REDIS_USER_PORT"))
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     redisInfo,
-		Password: "",
-		DB:       0,
-	})
-
-	pong, err := redisClient.Ping(ctx).Result()
-	if err != nil {
-		panic(fmt.Sprintf("Error init Redis: %v", err))
-	}
-
-	fmt.Printf("\nRedis user instance started successfully: pong message = {%s}\n", pong)
-
-	userService.redisClient = redisClient
-	return userService
-}
-
 func SaveUrlMapping(shortUrl string, originalUrl string, userId string) {
 	err := storeService.redisClient.Set(ctx, shortUrl, originalUrl, CacheDuration).Err()
 	if err != nil {
