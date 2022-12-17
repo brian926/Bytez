@@ -32,7 +32,6 @@ services:
     links:
       - postDB
       - redisStore
-      - redisUser
     depends_on:
       postDB:
        condition: service_healthy

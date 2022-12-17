@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/brian926/UrlShorterGo/server/shortener"
 	"github.com/brian926/UrlShorterGo/server/store"
@@ -20,6 +21,14 @@ func CreateShortUrl(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	u, err := url.ParseRequestURI(creationRequest.LongUrl)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Please use links starting with https:// or http://"})
+		return
+	}
+
+	creationRequest.LongUrl = u.String()
 
 	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
 	store.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId)

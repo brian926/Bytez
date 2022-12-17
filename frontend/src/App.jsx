@@ -4,15 +4,6 @@ import Errors from "./components/Errors"
 import './App.css'
 
 function App() {
-  const [item, setItems] = useState([])
-  useEffect(() => {
-    const items = JSON.parse(localStorage.getItem('items'))
-    if (items) {
-      console.log(item)
-      setItems(items)
-    }
-  }, [])
-
   // Fetch welcome message, connecting to backend
   const [isFetching, setIsFetching] = useState(false)
   const [errors, setErrors] = useState([])
@@ -37,8 +28,8 @@ function App() {
           setData(actualData);
           setError(null);
         } catch(err) {
+            console.log(err)
             setError(err.message);
-            setData(null);
         } finally {
             setIsFetching(false)
             setLoading(false);
@@ -55,41 +46,45 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      const response = await fetch(Endpoints.createUrl, {
-      method: 'POST',
-      body: JSON.stringify({"long_url":post, "user_id": fakeUserId})
+    if (post) {
+      try {
+        const response = await fetch(Endpoints.createUrl, {
+        method: 'POST',
+        body: JSON.stringify({"long_url":post, "user_id": fakeUserId})
 
-      })
-      if (!response.ok) {
-        throw new Error(
-          `This is an HTTP error: The status is ${response.status}`
-        );
-      }
+        })
         let actualData = await response.json();
-
-        setState(actualData.short_url)
-        localStorage.setItem('items', JSON.stringify(actualData.short_url))
-    } catch(err) {
-        setErrors([e.toString()])
-        console.log(err)
+        if (!response.ok) {
+          setErrors([actualData.error])
+          throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+          );
+        }
+          setErrors([])
+          setState(actualData.short_url)
+      } catch(err) {
+          setState(null)
+          setErrors([actualData.error])
+          console.log(err)
+      }
+    }
+    else {
+      setErrors(["Please enter a link"])
+      setState(null)
     }
   } 
 
   return (
     <div className="wrapper">
         <div>
-          <a href="https://vitejs.dev" target="_blank">
             <img src="/bytez-blue.png" className="bytez" alt="bytez" />
-          </a>
         </div>
         <div className="card">
           <p><b>{data && (data.message)}</b></p>
           {loading && <div>A moment please...</div>}
-          {error && (<div>{`There is a problem fetching the post data - ${error}`}</div>)}
+          {error && (<div>{`We ran into a problem - ${error}`}</div>)}
         </div>
         <p>Enter a URL link down below and generate a shorter cleaner URL for easy sharing and posting!</p>
-        <p>*Links generated will only be avaialble for 6 hours*</p>
       <div>
         {isFetching ? (
           <div>fetching details...</div>
@@ -105,14 +100,13 @@ function App() {
                   />
                   <button type="submit">Generate</button>
                 </form>
-                {responseToPost && (<div> <a className="link" target="_blank" href={responseToPost}>{responseToPost}</a></div>)}
               </div>
+            {responseToPost && (<div> <a className="link" target="_blank" href={responseToPost}>{responseToPost}</a></div>)}
+            <div><Errors errors={errors} /></div>
           </div>
         )}
 
-        <Errors errors={errors} />
-
-        <div>
+        <div className="footer">
           <a href="https://vitejs.dev" target="_blank">
             <img src="/vite.svg" className="logo" alt="Vite logo" />
           </a>
@@ -128,11 +122,11 @@ function App() {
           <a href="https://www.postgresql.org" target="_blank">
             <img src="/postgres.svg" className="logo" alt="Postgres logo" />
           </a>
+          <p className="read-the-docs">
+            Click on the Vite, React, Go, Redis, and Postgres logos to learn more
+          </p>
         </div>
       </div>
-        <p className="read-the-docs">
-          Click on the Vite, React, Go, Redis, and Postgres logos to learn more
-        </p>
     </div>
   )
 }

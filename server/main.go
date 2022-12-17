@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/brian926/UrlShorterGo/server/controllers"
-	"github.com/brian926/UrlShorterGo/server/db"
 	"github.com/brian926/UrlShorterGo/server/forms"
 	"github.com/brian926/UrlShorterGo/server/handler"
 	"github.com/brian926/UrlShorterGo/server/store"
@@ -70,7 +69,7 @@ func main() {
 		controllers.Pong(c)
 	})
 
-	db.Init()
+	//db.Init()
 	store.InitializeStore()
 
 	v1 := r.Group("/v1")
