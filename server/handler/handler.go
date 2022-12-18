@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/brian926/UrlShorterGo/server/shortener"
-	"github.com/brian926/UrlShorterGo/server/store"
+	"github.com/brian926/Bytez/server/shortener"
+	"github.com/brian926/Bytez/server/store"
 	"github.com/gin-gonic/gin"
 )
 

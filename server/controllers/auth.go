@@ -6,18 +6,18 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/brian926/UrlShorterGo/server/forms"
-	"github.com/brian926/UrlShorterGo/server/models"
+	"github.com/brian926/Bytez/server/forms"
+	"github.com/brian926/Bytez/server/models"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v4"
 )
 
-//AuthController ...
+// AuthController ...
 type AuthController struct{}
 
 var authModel = new(models.AuthModel)
 
-//TokenValid ...
+// TokenValid ...
 func (ctl AuthController) TokenValid(c *gin.Context) {
 
 	tokenAuth, err := authModel.ExtractTokenMetadata(c.Request)
@@ -38,7 +38,7 @@ func (ctl AuthController) TokenValid(c *gin.Context) {
 	c.Set("userID", userID)
 }
 
-//Refresh ...
+// Refresh ...
 func (ctl AuthController) Refresh(c *gin.Context) {
 	var tokenForm forms.Token
 

@@ -115,6 +115,37 @@ CREATE TABLE
 
 ALTER TABLE "user" OWNER TO postgres;
 
+-- CREATE URLS TABLE
+
+CREATE TABLE
+    urls (
+        id integer NOT NULL,
+        shortUrl character varying,
+        longUrl character varying,
+        created_at integer
+    );
+
+ALTER TABLE urls OWNER TO postgres;
+
+CREATE SEQUENCE url_id_seq START
+WITH
+    1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+
+ALTER TABLE url_id_seq OWNER TO postgres;
+
+ALTER SEQUENCE url_id_seq OWNER BY urls.id;
+
+ALTER TABLE ONLY urls
+ALTER COLUMN id
+SET
+    DEFAULT nextval('url_id_seq':: regclass);
+
+COPY urls (id, shortUrl, longUrl, created_at) FROM stdin;
+
+\. SELECT pg_catalog.setval('url_id_seq', 1, false);
+
+ALTER TABLE ONLY urls ADD CONSTRAINT user_id PRIMARY KEY (id);
+
 --
 
 -- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -194,30 +225,45 @@ ALTER TABLE ONLY "user" ADD CONSTRAINT user_id PRIMARY KEY (id);
 
 -- Name: user create_user_created_at; Type: TRIGGER; Schema: public; Owner: postgres
 
---
-
 CREATE TRIGGER CREATE_USER_CREATED_AT 
 	BEFORE
-	INSERT ON "user" FOR EACH ROW
+	INSERT ON urls FOR EACH ROW
 	EXECUTE
 	    PROCEDURE created_at_column();
 	--
-	-- TOC entry 2287 (class 2620 OID 36654)
-	-- Name: user update_user_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+	-- Name: public; Type: ACL; Schema: -; Owner: postgres
 	--
-	CREATE TRIGGER UPDATE_USER_UPDATED_AT 
+	REVOKE ALL ON SCHEMA public FROM PUBLIC;
+	REVOKE ALL ON SCHEMA public FROM postgres;
+	GRANT ALL ON SCHEMA public TO postgres;
+	GRANT ALL ON SCHEMA public TO PUBLIC;
+	--
+	-- PostgreSQL database dump complete
+	--
+	--
+	CREATE TRIGGER CREATE_USER_CREATED_AT 
 		BEFORE
-		UPDATE ON "user" FOR EACH ROW
+		INSERT ON "user" FOR EACH ROW
 		EXECUTE
-		    PROCEDURE update_at_column();
+		    PROCEDURE created_at_column();
 		--
-		-- Name: public; Type: ACL; Schema: -; Owner: postgres
+		-- TOC entry 2287 (class 2620 OID 36654)
+		-- Name: user update_user_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 		--
-		REVOKE ALL ON SCHEMA public FROM PUBLIC;
-		REVOKE ALL ON SCHEMA public FROM postgres;
-		GRANT ALL ON SCHEMA public TO postgres;
-		GRANT ALL ON SCHEMA public TO PUBLIC;
-		--
-		-- PostgreSQL database dump complete
-		--
+		CREATE TRIGGER UPDATE_USER_UPDATED_AT 
+			BEFORE
+			UPDATE ON "user" FOR EACH ROW
+			EXECUTE
+			    PROCEDURE update_at_column();
+			--
+			-- Name: public; Type: ACL; Schema: -; Owner: postgres
+			--
+			REVOKE ALL ON SCHEMA public FROM PUBLIC;
+			REVOKE ALL ON SCHEMA public FROM postgres;
+			GRANT ALL ON SCHEMA public TO postgres;
+			GRANT ALL ON SCHEMA public TO PUBLIC;
+			--
+			-- PostgreSQL database dump complete
+			--
+		
 	

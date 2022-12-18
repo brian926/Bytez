@@ -1,27 +1,27 @@
 package controllers
 
 import (
-	"github.com/brian926/UrlShorterGo/server/forms"
-	"github.com/brian926/UrlShorterGo/server/models"
+	"github.com/brian926/Bytez/server/forms"
+	"github.com/brian926/Bytez/server/models"
 
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-//UserController ...
+// UserController ...
 type UserController struct{}
 
 var userModel = new(models.UserModel)
 var userForm = new(forms.UserForm)
 
-//getUserID ...
+// getUserID ...
 func getUserID(c *gin.Context) (userID int64) {
 	//MustGet returns the value for the given key if it exists, otherwise it panics.
 	return c.MustGet("userID").(int64)
 }
 
-//Login ...
+// Login ...
 func (ctrl UserController) Login(c *gin.Context) {
 	var loginForm forms.LoginForm
 
@@ -40,7 +40,7 @@ func (ctrl UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged in", "user": user, "token": token})
 }
 
-//Register ...
+// Register ...
 func (ctrl UserController) Register(c *gin.Context) {
 	var registerForm forms.RegisterForm
 
@@ -59,7 +59,7 @@ func (ctrl UserController) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully registered", "user": user})
 }
 
-//Logout ...
+// Logout ...
 func (ctrl UserController) Logout(c *gin.Context) {
 
 	au, err := authModel.ExtractTokenMetadata(c.Request)

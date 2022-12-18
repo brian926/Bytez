@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/brian926/UrlShorterGo/server/controllers"
-	"github.com/brian926/UrlShorterGo/server/forms"
-	"github.com/brian926/UrlShorterGo/server/handler"
+	"github.com/brian926/Bytez/server/controllers"
+	"github.com/brian926/Bytez/server/forms"
+	"github.com/brian926/Bytez/server/handler"
 	"github.com/brian926/UrlShorterGo/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
