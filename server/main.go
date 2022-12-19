@@ -7,7 +7,6 @@ import (
 
 	"github.com/brian926/Bytez/server/controllers"
 	"github.com/brian926/Bytez/server/forms"
-	"github.com/brian926/Bytez/server/handler"
 	"github.com/brian926/UrlShorterGo/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -51,6 +50,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	url := new(controllers.UrlController)
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hey Weclome to Bytez! The URL Shortener API",
@@ -58,11 +59,11 @@ func main() {
 	})
 
 	r.POST("/create-short-url", func(c *gin.Context) {
-		handler.CreateShortUrl(c)
+		url.CreateShortUrl(c)
 	})
 
 	r.GET("/:shortUrl", func(c *gin.Context) {
-		handler.HandleShortUrlRedirect(c)
+		controllers.HandleShortUrlRedirect(c)
 	})
 
 	r.GET("/pong", func(c *gin.Context) {

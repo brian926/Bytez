@@ -2,16 +2,28 @@ package store
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/brian926/Bytez/server/db"
+	"github.com/brian926/Bytez/server/forms"
 	"github.com/go-redis/redis/v8"
 )
 
 type StorageService struct {
 	redisClient *redis.Client
 }
+
+type Url struct {
+	ID        int64  `db:"id, primarykey, autoincrement" json:"id"`
+	ShortUrl  string `db:"shortUrl" json:"email"`
+	LongUrl   string `db:"longUrl" json:"-"`
+	CreatedAt int64  `db:"created_at" json:"-"`
+}
+
+type UrlModel struct{}
 
 var (
 	storeService = &StorageService{}
@@ -40,11 +52,36 @@ func InitializeStore() *StorageService {
 	return storeService
 }
 
-func SaveUrlMapping(shortUrl string, originalUrl string, userId string) {
-	err := storeService.redisClient.Set(ctx, shortUrl, originalUrl, CacheDuration).Err()
+func (u UrlModel) SaveUrlMapping(urlCreation forms.UrlCreationRequest) (url Url, err error) {
+	getDb := db.GetDB()
+
+	//Check if the url exists in database
+	checkUser, err := getDb.SelectInt("SELECT count(id) FROM public.url WHERE longUrl=LOWER($1) LIMIT 1", urlCreation.LongUrl)
 	if err != nil {
-		panic(fmt.Sprintf("Failed saving key url | Error: %v - short url: %s - originalUrl: %s\n", err, shortUrl, originalUrl))
+		fmt.Println("error in Select")
+		return url, errors.New("something went wrong checking for long url, please try again later")
 	}
+
+	if checkUser > 0 {
+		return url, errors.New("mapping already exists")
+	}
+
+	err = getDb.QueryRow("INSERT INTO public.url(shortUrl, longUrl) VALUES($1, $2) RETURNING id", urlCreation.ShortUrl, urlCreation.LongUrl).Scan(&url.ID)
+	if err != nil {
+		fmt.Println("error in query")
+		return url, errors.New("something went wrong creating url, please try again later")
+	}
+
+	url.ShortUrl = urlCreation.ShortUrl
+	url.LongUrl = urlCreation.LongUrl
+
+	save := storeService.redisClient.Set(ctx, url.ShortUrl, url.LongUrl, CacheDuration).Err()
+	if save != nil {
+		fmt.Println("error in redis")
+		return url, errors.New("failed to set reddis")
+	}
+
+	return url, nil
 }
 
 func RetrieveInitialUrl(shortUrl string) string {

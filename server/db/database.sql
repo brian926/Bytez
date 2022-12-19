@@ -118,14 +118,14 @@ ALTER TABLE "user" OWNER TO postgres;
 -- CREATE URLS TABLE
 
 CREATE TABLE
-    urls (
+    "urls" (
         id integer NOT NULL,
         shortUrl character varying,
         longUrl character varying,
         created_at integer
     );
 
-ALTER TABLE urls OWNER TO postgres;
+ALTER TABLE "urls" OWNER TO postgres;
 
 CREATE SEQUENCE url_id_seq START
 WITH
@@ -133,18 +133,20 @@ WITH
 
 ALTER TABLE url_id_seq OWNER TO postgres;
 
-ALTER SEQUENCE url_id_seq OWNER BY urls.id;
+ALTER SEQUENCE url_id_seq OWNED BY "urls".id;
 
-ALTER TABLE ONLY urls
+ALTER TABLE ONLY "urls"
 ALTER COLUMN id
 SET
     DEFAULT nextval('url_id_seq':: regclass);
 
-COPY urls (id, shortUrl, longUrl, created_at) FROM stdin;
+-- COPY "urls" (id, shortUrl, longUrl, created_at) FROM stdin;
 
-\. SELECT pg_catalog.setval('url_id_seq', 1, false);
+-- \.
 
-ALTER TABLE ONLY urls ADD CONSTRAINT user_id PRIMARY KEY (id);
+SELECT pg_catalog.setval('url_id_seq', 1, false);
+
+ALTER TABLE ONLY "urls" ADD CONSTRAINT url_id PRIMARY KEY (id);
 
 --
 
@@ -227,7 +229,7 @@ ALTER TABLE ONLY "user" ADD CONSTRAINT user_id PRIMARY KEY (id);
 
 CREATE TRIGGER CREATE_USER_CREATED_AT 
 	BEFORE
-	INSERT ON urls FOR EACH ROW
+	INSERT ON "urls" FOR EACH ROW
 	EXECUTE
 	    PROCEDURE created_at_column();
 	--
