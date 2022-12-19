@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/brian926/Bytez/server/controllers"
+	"github.com/brian926/Bytez/server/db"
 	"github.com/brian926/Bytez/server/forms"
 	"github.com/brian926/UrlShorterGo/server/store"
 	"github.com/gin-contrib/cors"
@@ -70,8 +71,9 @@ func main() {
 		controllers.Pong(c)
 	})
 
-	//db.Init()
 	store.InitializeStore()
+	//db.Init()
+	db.Init()
 
 	v1 := r.Group("/v1")
 	{

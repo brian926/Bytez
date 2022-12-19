@@ -24,7 +24,7 @@ SET client_min_messages = warning;
 
 --DROP DATABASE golang_gin_db;
 
---DROP DATABASE golang_gin_db;
+DROP DATABASE golang_gin_db;
 
 CREATE DATABASE golang_gin_db
 WITH
@@ -64,8 +64,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 CREATE FUNCTION CREATED_AT_COLUMN() RETURNS TRIGGER 
 LANGUAGE PLPGSQL AS 
-	$$ BEGIN NEW.updated_at = EXTRACT(EPOCH FROM NOW());
-	NEW.created_at = EXTRACT(EPOCH FROM NOW());
+	$$ BEGIN NEW.created_at = EXTRACT(EPOCH FROM NOW());
 	RETURN NEW;
 END; 
 
@@ -140,11 +139,9 @@ ALTER COLUMN id
 SET
     DEFAULT nextval('url_id_seq':: regclass);
 
--- COPY "urls" (id, shortUrl, longUrl, created_at) FROM stdin;
+COPY "urls" (id, shortUrl, longUrl, created_at) FROM stdin;
 
--- \.
-
-SELECT pg_catalog.setval('url_id_seq', 1, false);
+\. SELECT pg_catalog.setval('url_id_seq', 1, false);
 
 ALTER TABLE ONLY "urls" ADD CONSTRAINT url_id PRIMARY KEY (id);
 
@@ -185,25 +182,17 @@ SET
 
 --
 
--- COPY "user" (
+COPY "user" (
+    id,
+    email,
+    password,
+    name,
+    updated_at,
+    created_at
+)
+FROM stdin;
 
---     id,
-
---     email,
-
---     password,
-
---     name,
-
---     updated_at,
-
---     created_at
-
--- )
-
--- FROM stdin;
-
--- \.
+\.
 
 --
 

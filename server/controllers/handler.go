@@ -34,7 +34,6 @@ func (crtl UrlController) CreateShortUrl(c *gin.Context) {
 	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
 	creationRequest.ShortUrl = shortUrl
 
-	fmt.Println(creationRequest)
 	save, err := storeModel.SaveUrlMapping(creationRequest)
 	if err != nil {
 		fmt.Println("error from save")
@@ -43,8 +42,7 @@ func (crtl UrlController) CreateShortUrl(c *gin.Context) {
 	}
 
 	host := "http://localhost:9808/"
-	fmt.Println(host)
-	fmt.Println(save)
+
 	c.JSON(200, gin.H{
 		"message":   "short url created successfully",
 		"short_url": host + save.ShortUrl,
