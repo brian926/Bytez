@@ -12,6 +12,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+type UrlModel struct{}
 type StorageService struct {
 	redisClient *redis.Client
 }
@@ -23,8 +24,6 @@ type Url struct {
 	CreatedAt int64  `db:"created_at" json:"-"`
 }
 
-type UrlModel struct{}
-
 var (
 	storeService = &StorageService{}
 	ctx          = context.Background()
@@ -32,7 +31,7 @@ var (
 
 const CacheDuration = 6 * time.Hour
 
-func InitializeStore() *StorageService {
+func (u UrlModel) InitializeStore() *StorageService {
 	redisInfo := fmt.Sprintf("%s:%s", os.Getenv("REDIS_STORE_HOST"), os.Getenv("REDIS_STORE_PORT"))
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     redisInfo,

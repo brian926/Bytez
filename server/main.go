@@ -8,7 +8,7 @@ import (
 	"github.com/brian926/Bytez/server/controllers"
 	"github.com/brian926/Bytez/server/db"
 	"github.com/brian926/Bytez/server/forms"
-	"github.com/brian926/UrlShorterGo/server/store"
+	"github.com/brian926/Bytez/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -71,7 +71,9 @@ func main() {
 		controllers.Pong(c)
 	})
 
-	store.InitializeStore()
+	storeModel := new(store.UrlModel)
+	storeModel.InitializeStore()
+
 	//db.Init()
 	db.Init()
 
