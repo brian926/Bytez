@@ -7,11 +7,9 @@ import (
 
 	"github.com/brian926/Bytez/server/controllers"
 	"github.com/brian926/Bytez/server/db"
-	"github.com/brian926/Bytez/server/forms"
 	"github.com/brian926/Bytez/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
@@ -24,15 +22,6 @@ func RequestIDMiddlewre() gin.HandlerFunc {
 	}
 }
 
-var auth = new(controllers.AuthController)
-
-func TokenAuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		auth.TokenValid(c)
-		c.Next()
-	}
-}
-
 func main() {
 	load := godotenv.Load()
 	if load != nil {
@@ -40,8 +29,6 @@ func main() {
 	}
 
 	r := gin.Default()
-
-	binding.Validator = new(forms.DefaultValidator)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -64,7 +51,7 @@ func main() {
 	})
 
 	r.GET("/:shortUrl", func(c *gin.Context) {
-		controllers.HandleShortUrlRedirect(c)
+		url.HandleShortUrlRedirect(c)
 	})
 
 	r.GET("/pong", func(c *gin.Context) {
@@ -76,24 +63,6 @@ func main() {
 
 	//db.Init()
 	db.Init()
-
-	v1 := r.Group("/v1")
-	{
-		/*** START USER ***/
-		user := new(controllers.UserController)
-
-		v1.POST("/user/login", user.Login)
-		v1.POST("/user/register", user.Register)
-		v1.GET("/user/logout", user.Logout)
-
-		/*** START AUTH ***/
-		auth := new(controllers.AuthController)
-
-		//Refresh the token when needed to generate new access_token and refresh_token for the user
-		v1.POST("/token/refresh", auth.Refresh)
-
-		v1.GET("/session", TokenAuthMiddleware())
-	}
 
 	r.NoRoute(func(c *gin.Context) {
 		c.HTML(404, "404.html", gin.H{})

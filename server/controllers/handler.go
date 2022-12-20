@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -36,7 +35,6 @@ func (crtl UrlController) CreateShortUrl(c *gin.Context) {
 
 	save, err := storeModel.SaveUrlMapping(creationRequest)
 	if err != nil {
-		fmt.Println("error from save")
 		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
 		return
 	}
@@ -49,8 +47,20 @@ func (crtl UrlController) CreateShortUrl(c *gin.Context) {
 	})
 }
 
-func HandleShortUrlRedirect(c *gin.Context) {
-	shortUrl := c.Param("shortUrl")
-	initialUrl := store.RetrieveInitialUrl(shortUrl)
-	c.Redirect(302, initialUrl)
+func (crtl UrlController) HandleShortUrlRedirect(c *gin.Context) {
+	var creationRequest forms.UrlCreationRequest
+	creationRequest.ShortUrl = c.Param("shortUrl")
+	initialUrl, err := storeModel.RetrieveInitialUrl(creationRequest)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.Redirect(302, initialUrl.LongUrl)
+}
+
+func Pong(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "Pong",
+	})
 }

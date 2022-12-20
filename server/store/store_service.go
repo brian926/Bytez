@@ -50,39 +50,58 @@ func (u UrlModel) InitializeStore() *StorageService {
 }
 
 func (u UrlModel) SaveUrlMapping(urlCreation forms.UrlCreationRequest) (url Url, err error) {
-	checkUser, err := db.GetDB().SelectInt("SELECT count(id) FROM public.urls WHERE longUrl=LOWER($1) LIMIT 1", urlCreation.LongUrl)
+	// Check redis first if already saved, else save it
+	result, err := storeService.redisClient.Get(ctx, urlCreation.ShortUrl).Result()
 	if err != nil {
-		return url, errors.New("something went wrong checking for long url, please try again later")
+		checkUser, err := db.GetDB().SelectInt("SELECT count(id) FROM public.urls WHERE longUrl=LOWER($1) LIMIT 1", urlCreation.LongUrl)
+		if err != nil {
+			return url, errors.New("something went wrong checking for long url, please try again later")
+		}
+
+		// even though the URL already exist, return with no errors
+		if checkUser > 0 {
+			return url, nil
+		}
+
+		err = db.GetDB().QueryRow("INSERT INTO public.urls(shortUrl, longUrl) VALUES($1, $2) RETURNING id", urlCreation.ShortUrl, urlCreation.LongUrl).Scan(&url.ID)
+		if err != nil {
+			return url, errors.New("something went wrong creating url, please try again later")
+		}
+
+		url.ShortUrl = urlCreation.ShortUrl
+		url.LongUrl = urlCreation.LongUrl
+
+		errAccess := storeService.redisClient.Set(ctx, url.ShortUrl, url.LongUrl, CacheDuration).Err()
+		if errAccess != nil {
+			return url, errors.New("failed to set reddis")
+		}
+
+		return url, nil
 	}
 
-	if checkUser > 0 {
-		return url, errors.New("mapping already exists")
-	}
-
-	err = db.GetDB().QueryRow("INSERT INTO public.urls(shortUrl, longUrl) VALUES($1, $2) RETURNING id", urlCreation.ShortUrl, urlCreation.LongUrl).Scan(&url.ID)
-	if err != nil {
-		return url, errors.New("something went wrong creating url, please try again later")
-	}
-
+	url.LongUrl = result
 	url.ShortUrl = urlCreation.ShortUrl
-	url.LongUrl = urlCreation.LongUrl
-
-	fmt.Println("redis?")
-	errAccess := storeService.redisClient.Set(ctx, url.ShortUrl, url.LongUrl, CacheDuration).Err()
-	if errAccess != nil {
-		return url, errors.New("failed to set reddis")
-	}
-
 	return url, nil
 }
 
-func RetrieveInitialUrl(shortUrl string) string {
-	result, err := storeService.redisClient.Get(ctx, shortUrl).Result()
+func (u UrlModel) RetrieveInitialUrl(urlCreation forms.UrlCreationRequest) (url Url, err error) {
+	result, err := storeService.redisClient.Get(ctx, urlCreation.ShortUrl).Result()
 	if err != nil {
-		panic(fmt.Sprintf("Failed RetrieveInitialUrl url | error: %v - shortUrl: %s\n", err, shortUrl))
+		err = db.GetDB().SelectOne(&url, "SELECT shortUrl, longUrl FROM public.urls WHERE shortUrl=LOWER($1) LIMIT 1", urlCreation.ShortUrl)
+
+		if err != nil {
+			return url, errors.New("failed to set database urls")
+		}
+
+		errAccess := storeService.redisClient.Set(ctx, url.ShortUrl, url.LongUrl, CacheDuration).Err()
+		if errAccess != nil {
+			return url, errors.New("failed to set reddis")
+		}
 	}
 
-	return result
+	url.LongUrl = result
+
+	return url, nil
 }
 
 func GetRedis() *redis.Client {
