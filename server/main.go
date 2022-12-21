@@ -10,23 +10,16 @@ import (
 	"github.com/brian926/Bytez/server/store"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
-
-func RequestIDMiddlewre() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		uuid := uuid.New()
-		c.Writer.Header().Set("X-Request-Id", uuid.String())
-		c.Next()
-	}
-}
 
 func main() {
 	load := godotenv.Load()
 	if load != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
 

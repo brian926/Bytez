@@ -35,7 +35,7 @@ func (u UrlModel) InitializeStore() *StorageService {
 	redisInfo := fmt.Sprintf("%s:%s", os.Getenv("REDIS_STORE_HOST"), os.Getenv("REDIS_STORE_PORT"))
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     redisInfo,
-		Password: "",
+		Password: os.Getenv("REDIS_STORE_PASS"),
 		DB:       0,
 	})
 
