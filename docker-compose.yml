@@ -14,21 +14,21 @@ services:
       timeout: 5s
       retries: 5
 
-  web:
-    container_name: web
+  frontend:
+    container_name: frontend
     build: ./frontend
     depends_on:
-      - server
+      - backend
     ports:
-      - 5173:5173
+      - 127.0.0.1:5173:5173
     links:
-     - server
+     - backend
 
-  server:
-    container_name: server
+  backend:
+    container_name: backend
     build: ./server
     ports:
-      - 9808:9808
+      - 127.0.0.1:9808:9808
     links:
       - postDB
       - redisStore

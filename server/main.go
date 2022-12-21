@@ -38,6 +38,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	r.SetTrustedProxies([]string{"127.0.0.1"})
+
 	url := new(controllers.UrlController)
 
 	r.GET("/", func(c *gin.Context) {

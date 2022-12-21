@@ -5,6 +5,6 @@ COPY . .
 RUN go mod download
 
 RUN go build -o /go-docker
-EXPOSE 9808 6379 6380 5432
+EXPOSE 9808
 
 CMD [ "/go-docker"]
