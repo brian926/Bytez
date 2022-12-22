@@ -33,8 +33,10 @@ services:
       - postDB
       - redisStore
     depends_on:
+      redisStore:
+        condition: service_started
       postDB:
-       condition: service_healthy
+          condition: service_healthy
 
   redisStore:
     container_name: redisStore

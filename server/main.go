@@ -45,7 +45,7 @@ func main() {
 		url.CreateShortUrl(c)
 	})
 
-	r.GET("/pass/:shortUrl", func(c *gin.Context) {
+	r.GET("/v1/:shortUrl", func(c *gin.Context) {
 		url.HandleShortUrlRedirect(c)
 	})
 
@@ -56,7 +56,6 @@ func main() {
 	storeModel := new(store.UrlModel)
 	storeModel.InitializeStore()
 
-	//db.Init()
 	db.Init()
 
 	r.NoRoute(func(c *gin.Context) {

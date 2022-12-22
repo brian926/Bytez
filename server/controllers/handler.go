@@ -39,7 +39,7 @@ func (crtl UrlController) CreateShortUrl(c *gin.Context) {
 		return
 	}
 
-	host := "http://mineserver/pass/"
+	host := "http://mineserver/v1/"
 
 	c.JSON(200, gin.H{
 		"message":   "short url created successfully",
