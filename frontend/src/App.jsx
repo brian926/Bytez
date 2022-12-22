@@ -38,9 +38,7 @@ function App() {
         const getData = async () => {
         try {
           setIsFetching(true)
-          const response = await fetch(
-          `http://localhost:9808`
-          );
+          const response = await fetch(Endpoints.home);
           if (!response.ok) {
           throw new Error(
               `This is an HTTP error: The status is ${response.status}`
