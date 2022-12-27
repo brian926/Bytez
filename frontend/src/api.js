@@ -1,4 +1,4 @@
-export const apiURL = 'http://mineserver'
+export const apiURL = 'https://bytez.us'
 
 export const Endpoints = {
     createUrl: `${apiURL}/create-short-url`,
