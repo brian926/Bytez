@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert
+    kompose.version: 1.30.0 (9d8dcb518)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: proxy
+  name: proxy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: proxy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert
+        kompose.version: 1.30.0 (9d8dcb518)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/bytez-default: "true"
+        io.kompose.service: proxy
+    spec:
+      containers:
+        - image: nginx
+          name: proxy
+          ports:
+            - containerPort: 8000
+              hostPort: 8000
+              protocol: TCP
+            - containerPort: 8001
+              hostPort: 8001
+              protocol: TCP
+            - containerPort: 9808
+              hostPort: 9808
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: proxy-claim0
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: proxy-claim0
+          persistentVolumeClaim:
+            claimName: proxy-claim0
+            readOnly: true
+status: {}
