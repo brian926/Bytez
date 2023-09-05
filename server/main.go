@@ -35,21 +35,21 @@ func main() {
 
 	url := new(controllers.UrlController)
 
-	r.GET("/home", func(c *gin.Context) {
+	r.GET("/api/home", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hey Weclome to Bytez! The URL Shortener API",
 		})
 	})
 
-	r.POST("/create-short-url", func(c *gin.Context) {
+	r.POST("/api/create-short-url", func(c *gin.Context) {
 		url.CreateShortUrl(c)
 	})
 
-	r.GET("/v1/:shortUrl", func(c *gin.Context) {
+	r.GET("/api/:shortUrl", func(c *gin.Context) {
 		url.HandleShortUrlRedirect(c)
 	})
 
-	r.GET("/pong", func(c *gin.Context) {
+	r.GET("/api/pong", func(c *gin.Context) {
 		controllers.Pong(c)
 	})
 
