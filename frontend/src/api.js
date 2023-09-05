@@ -1,4 +1,4 @@
-export const apiURL = 'http://localhost:9808/api'
+export const apiURL = 'http://localhost:8000/api'
 
 export const Endpoints = {
     createUrl: `${apiURL}/create-short-url`,
